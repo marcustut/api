@@ -1,0 +1,36 @@
+syntax = "v1"
+
+info (
+	title: marcustut-api
+	desc: This is an API for organising & automating personal stuff.
+	author: "Marcus Lee"
+	email: "marcustutorial@hotmail.com"
+)
+
+type (
+	expandReq {
+		Shorten string `form:"shorten"`
+	}
+
+	expandResp {
+		Url string `json:"url"`
+	}
+)
+
+type (
+	shortenReq {
+		Url string `form:"url"`
+	}
+
+	shortenResp {
+		Shorten string `json:"shorten"`
+	}
+)
+
+service marcustut-api {
+	@handler ShorturlShortenHandler
+	get /shorturl/shorten(shortenReq) returns(shortenResp)
+	
+	@handler ShorturlExpandHandler
+	get /shorturl/expand(expandReq) returns(expandResp)
+}

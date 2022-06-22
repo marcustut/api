@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS shorten(
+  shorten VARCHAR(255) NOT NULL,
+  url VARCHAR(255) NOT NULL,
+  PRIMARY KEY(shorten)
+);
