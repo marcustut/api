@@ -27,10 +27,23 @@ type (
 	}
 )
 
+type (
+	registerReq {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+
+	registerResp {
+	}
+)
+
 service marcustut-api {
 	@handler ShorturlShortenHandler
 	get /shorturl/shorten(shortenReq) returns(shortenResp)
 	
 	@handler ShorturlExpandHandler
 	get /shorturl/expand(expandReq) returns(expandResp)
+	
+	@handler AmaRegister
+	post /ama/register(registerReq) returns(registerResp)
 }
