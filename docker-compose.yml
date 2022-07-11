@@ -1,0 +1,61 @@
+version: '3'
+
+networks:
+  marcustut:
+    driver: bridge
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./api/Dockerfile
+    ports:
+      - "8888:8888"
+    networks:
+      - marcustut
+    depends_on:
+      - shorturl-rpc
+      - etcd
+  
+  shorturl-rpc:
+    build:
+      context: .
+      dockerfile: ./rpc/shorturl/Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - marcustut
+    depends_on:
+      - postgres
+      - redis
+      - etcd
+
+  postgres:
+    image: postgres:15beta2-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_USER: marcus
+      POSTGRES_PASSWORD: localhost
+      POSTGRES_DB: marcustut
+
+  redis:
+    image: redis:7.0.2-alpine
+    ports:
+      - "6379:6379"
+
+  etcd:
+    image: bitnami/etcd:3.5
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+    ports:
+      - "2379:2379"
+    volumes:
+      - etcd_data:/bitnami/etcd
+    networks:
+      - marcustut
+
+volumes:
+  etcd_data:
+    driver: local
