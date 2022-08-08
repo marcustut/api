@@ -1,11 +1,11 @@
 use axum::{extract::Path, routing::get};
 use dotenv::dotenv;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use sqlx::{mysql::MySqlPoolOptions, MySql, Pool};
 use std::env;
 use tower_http::cors::{Any, CorsLayer};
 
-use rspc::{selection, Config};
+use rspc::{internal::specta::Type, selection, Config};
 
 #[derive(Debug, Serialize)]
 struct SpectaCompatibleNaiveDate(chrono::NaiveDate);
@@ -46,7 +46,6 @@ impl From<rust_decimal::Decimal> for SpectaCompatibleDecimal {
         Self(decimal)
     }
 }
-
 impl rspc::internal::specta::Type for SpectaCompatibleDecimal {
     const NAME: &'static str = "Decimal";
 
@@ -91,6 +90,16 @@ struct ListExpensesResponse {
     tags: Option<String>,
 }
 
+#[derive(Debug, Deserialize, Type)]
+struct CreateExpensesRequest {
+    name: String,
+    amount: f64,
+    date: String,
+    category: String,
+    comment: Option<String>,
+    tags: Option<Vec<String>>,
+}
+
 struct Ctx {
     pool: Pool<MySql>,
 }
@@ -132,7 +141,7 @@ order by
             )
             .fetch_all(&ctx.pool)
             .await
-            .unwrap();
+            .unwrap(); // TODO: handle this error
 
             selection!(
                 expenses
@@ -152,9 +161,248 @@ order by
                 [{ id, name, amount, date, category, comment, tags }]
             )
         })
-        .mutation("createExpenses", |_, v: String| {
-            println!("Client said '{}'", v);
-            v
+        .mutation(
+            "createExpense",
+            |ctx: Ctx, req: CreateExpensesRequest| async move {
+                // start a transaction
+                let mut transaction = ctx.pool.begin().await.unwrap();
+
+                let mut expenses_categories_id: i32 = -1;
+
+                // check if category exists
+                let res = sqlx::query!(
+                    r#"select `id` from `expenses_categories` where `name` = ?"#,
+                    req.category
+                )
+                .fetch_one(&mut transaction)
+                .await;
+
+                match res {
+                    Ok(data) => expenses_categories_id = data.id,
+                    Err(_) => {
+                        // insert the category if it doesn't exist
+                        let last_insert_id = sqlx::query!(
+                            r#"insert into `expenses_categories` (`name`) values (?)"#,
+                            req.category,
+                        )
+                        .execute(&mut transaction)
+                        .await
+                        .unwrap()
+                        .last_insert_id();
+
+                        if last_insert_id > std::i32::MAX as u64 {
+                            panic!("last_insert_id is too big");
+                        } else {
+                            expenses_categories_id = last_insert_id as i32;
+                        }
+                    }
+                };
+
+                // process the given tags
+                let mut tags_ids: Vec<i32> = vec![];
+                match req.tags {
+                    Some(tags) => {
+                        for tag in tags {
+                            // check if tag exists
+                            let res =
+                                sqlx::query!(r#"select `id` from `tags` where `name` = ?"#, tag)
+                                    .fetch_one(&mut transaction)
+                                    .await;
+
+                            match res {
+                                Ok(data) => tags_ids.push(data.id),
+                                Err(_) => {
+                                    let last_insert_id = sqlx::query!(
+                                        r#"insert into `tags` (`name`) values (?)"#,
+                                        tag
+                                    )
+                                    .execute(&mut transaction)
+                                    .await
+                                    .unwrap()
+                                    .last_insert_id();
+
+                                    if last_insert_id > std::i32::MAX as u64 {
+                                        panic!("last_insert_id is too big");
+                                    } else {
+                                        tags_ids.push(last_insert_id as i32);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    None => {}
+                };
+
+                // insert the expenses with given categories_id
+                let expenses_id = sqlx::query!(
+                    r#"
+insert into
+    `expenses` (
+        `name`,
+        `amount`,
+        `date`,
+        `comment`,
+        `expenses_categories_id`
+    )
+values
+    (
+        ?,
+        ?,
+        ?,
+        ?,
+        ?
+    );
+                    "#,
+                    req.name,
+                    req.amount,
+                    req.date,
+                    req.comment,
+                    expenses_categories_id,
+                )
+                .execute(&mut transaction)
+                .await
+                .unwrap()
+                .last_insert_id();
+
+                // insert the tags_expenses relation
+                for tag_id in tags_ids {
+                    sqlx::query!(
+                        r#"
+insert into `tags_expenses` (`tags_id`, `expenses_id`) values (?, last_insert_id());
+                        "#,
+                        tag_id,
+                    )
+                    .execute(&mut transaction)
+                    .await
+                    .unwrap();
+                }
+
+                // commit the transaction
+                transaction.commit().await.unwrap();
+
+                // return the new expenses id
+                let expenses: ExpenseQueryResult = sqlx::query_as!(
+                    ExpenseQueryResult,
+                    r#"
+select
+    e. `id`,
+    e. `name`,
+    e. `amount`,
+    e. `date`,
+    ec. `name` as `category`,
+    e. `comment`,
+    group_concat(t. `name` separator ', ') as `tags`
+from
+    `expenses` e
+    inner join `expenses_categories` ec on e. `expenses_categories_id` = ec. `id`
+    left join `tags_expenses` te on e. `id` = te. `expenses_id`
+    left join `tags` t on t. `id` = te. `tags_id`
+where
+    e. `id` = ?
+group by
+    e. `id`,
+    e. `name`,
+    e. `amount`,
+    e. `date`,
+    ec. `name`,
+    e. `comment`
+order by
+    e. `date` desc;
+                "#,
+                    expenses_id,
+                )
+                .fetch_one(&ctx.pool)
+                .await
+                .unwrap();
+
+                selection!(
+                    ListExpensesResponse {
+                        id: expenses.id,
+                        name: expenses.name.clone(),
+                        amount: SpectaCompatibleDecimal::from(expenses.amount),
+                        date: SpectaCompatibleNaiveDate::from(expenses.date),
+                        category: expenses.category.clone(),
+                        comment: expenses.comment.clone(),
+                        tags: expenses.tags.clone(),
+                    },
+                    { id, name, amount, date, category, comment, tags }
+                )
+            },
+        )
+        .mutation("deleteExpense", |ctx: Ctx, id: i32| async move {
+            // query the expense
+            let expense = sqlx::query_as!(
+                ExpenseQueryResult,
+                r#"
+select
+    e. `id`,
+    e. `name`,
+    e. `amount`,
+    e. `date`,
+    ec. `name` as `category`,
+    e. `comment`,
+    group_concat(t. `name` separator ', ') as `tags`
+from
+    `expenses` e
+    inner join `expenses_categories` ec on e. `expenses_categories_id` = ec. `id`
+    left join `tags_expenses` te on e. `id` = te. `expenses_id`
+    left join `tags` t on t. `id` = te. `tags_id`
+where
+    e. `id` = ?
+group by
+    e. `id`,
+    e. `name`,
+    e. `amount`,
+    e. `date`,
+    ec. `name`,
+    e. `comment`
+order by
+    e. `date` desc;
+                "#,
+                id,
+            )
+            .fetch_one(&ctx.pool)
+            .await;
+
+            match expense {
+                Ok(data) => {
+                    // start a transaction
+                    let mut transaction = ctx.pool.begin().await.unwrap();
+
+                    // delete the expense
+                    // TODO: handle this error
+                    let res = sqlx::query!(r#"delete from `expenses` where `id` = ?;"#, id)
+                        .execute(&mut transaction)
+                        .await
+                        .unwrap();
+
+                    // delete the tags relation
+                    // TODO: handle this error
+                    let res = sqlx::query!(r#"delete from `tags_expenses` where `expenses_id` = ?;"#, id)
+                        .execute(&mut transaction)
+                        .await
+                        .unwrap();
+
+                    // commit the transaction
+                    transaction.commit().await.unwrap();
+                    Ok(selection!(
+                        ListExpensesResponse {
+                            id: data.id,
+                            name: data.name.clone(),
+                            amount: SpectaCompatibleDecimal::from(data.amount),
+                            date: SpectaCompatibleNaiveDate::from(data.date),
+                            category: data.category.clone(),
+                            comment: data.comment.clone(),
+                            tags: data.tags.clone(),
+                        },
+                        { id, name, amount, date, category, comment, tags }
+                    ))
+                }
+                Err(_) => Err(rspc::Error::new(
+                    rspc::ErrorCode::NotFound,
+                    format!("Expense with id {} not found", id),
+                )),
+            }
         })
         .build()
         .arced();

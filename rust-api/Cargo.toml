@@ -11,8 +11,9 @@ axum = { version = "0.5.13", features = ["ws"] }
 chrono = { version = "0.4.20", features = ["serde"] }
 dotenv = "0.15.0"
 rspc = { version = "0.0.4", features = ["axum", "chrono"] }
-rust_decimal = { version = "1.26.1", features = ["serde-float"] }
+rust_decimal = { version = "1.26.1", features = ["serde", "serde-float"] }
 serde = { version = "1.0.142", features = ["derive"] }
+specta = { version = "0.0.2", features = ["chrono"] }
 sqlx = { version = "0.6.1", features = ["runtime-tokio-native-tls", "mysql", "decimal", "chrono"] }
 time = { version = "0.3.12", features = ["serde-human-readable"] }
 tokio = { version = "1.20.1", features = ["full"] }

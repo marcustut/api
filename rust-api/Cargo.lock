@@ -1164,6 +1164,7 @@ dependencies = [
  "rspc",
  "rust_decimal",
  "serde",
+ "specta",
  "sqlx",
  "time 0.3.12",
  "tokio",
