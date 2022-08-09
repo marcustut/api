@@ -18,6 +18,17 @@ struct ExpenseQueryResult {
     tags: Option<String>,
 }
 
+#[derive(Debug, Serialize, Type)]
+struct IncomeQueryResult {
+    id: i32,
+    name: String,
+    amount: rust_decimal::Decimal,
+    date: chrono::NaiveDate,
+    category: String,
+    comment: Option<String>,
+    tags: Option<String>,
+}
+
 #[derive(Debug, Deserialize, Type)]
 struct CreateExpensesRequest {
     name: String,
@@ -74,6 +85,44 @@ order by
 
             selection!(
                 expenses,
+                [{ id, name, amount, date, category, comment, tags }]
+            )
+        })
+        .query("listIncomes", |ctx: Ctx, _: ()| async move {
+            let incomes: Vec<IncomeQueryResult> = sqlx::query_as!(
+                IncomeQueryResult,
+                r#"
+select
+    i. `id`,
+    i. `name`,
+    i. `amount`,
+    i. `date`,
+    ic. `name` as `category`,
+    i. `comment`,
+    group_concat(t. `name` separator ', ') as `tags`
+from
+    `incomes` i
+    inner join `incomes_categories` ic on i. `incomes_categories_id` = ic. `id`
+    left join `tags_incomes` ie on i. `id` = ie. `incomes_id`
+    left join `tags` t on t. `id` = ie. `tags_id`
+group by
+    i. `id`,
+    i. `name`,
+    i. `amount`,
+    i. `date`,
+    ic. `name`,
+    i. `comment`
+order by
+    i. `date` desc,
+    i. `id` desc;
+                "#,
+            )
+            .fetch_all(&ctx.pool)
+            .await
+            .unwrap(); // TODO: handle this error
+
+            selection!(
+                incomes,
                 [{ id, name, amount, date, category, comment, tags }]
             )
         })
