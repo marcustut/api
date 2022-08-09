@@ -1140,8 +1140,7 @@ dependencies = [
 [[package]]
 name = "rspc"
 version = "0.0.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "175b44c229ea6314902120dd1fa43181b3207a5eec18a7a3c9cbcc6ec6a780db"
+source = "git+https://github.com/oscartbeaumont/rspc.git#44489ec55de0faa5bf7f58d48605d6912781d7bf"
 dependencies = [
  "axum",
  "futures",
@@ -1329,11 +1328,11 @@ dependencies = [
 [[package]]
 name = "specta"
 version = "0.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b8dfbc46bfad9289e01928a228b82fdf615131212aded5497cce2d460b452e94"
+source = "git+https://github.com/oscartbeaumont/rspc.git#44489ec55de0faa5bf7f58d48605d6912781d7bf"
 dependencies = [
  "chrono",
  "convert_case",
+ "rust_decimal",
  "serde_json",
  "specta-macros",
  "termcolor",
@@ -1342,8 +1341,7 @@ dependencies = [
 [[package]]
 name = "specta-macros"
 version = "0.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a5ad5db5dea9fa5816615d722b682781214fed875fe56c1bcd0a67ee9c477d84"
+source = "git+https://github.com/oscartbeaumont/rspc.git#44489ec55de0faa5bf7f58d48605d6912781d7bf"
 dependencies = [
  "Inflector",
  "proc-macro2",

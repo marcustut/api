@@ -7,68 +7,7 @@ use tower_http::cors::{Any, CorsLayer};
 
 use rspc::{internal::specta::Type, selection, Config};
 
-#[derive(Debug, Serialize)]
-struct SpectaCompatibleNaiveDate(chrono::NaiveDate);
-
-impl From<chrono::NaiveDate> for SpectaCompatibleNaiveDate {
-    fn from(date: chrono::NaiveDate) -> Self {
-        Self(date)
-    }
-}
-
-impl rspc::internal::specta::Type for SpectaCompatibleNaiveDate {
-    const NAME: &'static str = "NaiveDate";
-
-    fn inline(
-        _: rspc::internal::specta::DefOpts,
-        _: &[rspc::internal::specta::DataType],
-    ) -> rspc::internal::specta::DataType {
-        rspc::internal::specta::DataType::Primitive(rspc::internal::specta::PrimitiveType::String)
-    }
-
-    fn reference(
-        _: rspc::internal::specta::DefOpts,
-        _: &[rspc::internal::specta::DataType],
-    ) -> rspc::internal::specta::DataType {
-        rspc::internal::specta::DataType::Primitive(rspc::internal::specta::PrimitiveType::String)
-    }
-
-    fn definition(_: rspc::internal::specta::DefOpts) -> rspc::internal::specta::DataType {
-        panic!()
-    }
-}
-
-#[derive(Debug, Serialize)]
-struct SpectaCompatibleDecimal(rust_decimal::Decimal);
-
-impl From<rust_decimal::Decimal> for SpectaCompatibleDecimal {
-    fn from(decimal: rust_decimal::Decimal) -> Self {
-        Self(decimal)
-    }
-}
-impl rspc::internal::specta::Type for SpectaCompatibleDecimal {
-    const NAME: &'static str = "Decimal";
-
-    fn inline(
-        _: rspc::internal::specta::DefOpts,
-        _: &[rspc::internal::specta::DataType],
-    ) -> rspc::internal::specta::DataType {
-        rspc::internal::specta::DataType::Primitive(rspc::internal::specta::PrimitiveType::f64)
-    }
-
-    fn reference(
-        _: rspc::internal::specta::DefOpts,
-        _: &[rspc::internal::specta::DataType],
-    ) -> rspc::internal::specta::DataType {
-        rspc::internal::specta::DataType::Primitive(rspc::internal::specta::PrimitiveType::f64)
-    }
-
-    fn definition(_: rspc::internal::specta::DefOpts) -> rspc::internal::specta::DataType {
-        panic!()
-    }
-}
-
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Type)]
 struct ExpenseQueryResult {
     id: i32,
     name: String,
@@ -79,22 +18,11 @@ struct ExpenseQueryResult {
     tags: Option<String>,
 }
 
-#[derive(Debug, Serialize)]
-struct ListExpensesResponse {
-    id: i32,
-    name: String,
-    amount: SpectaCompatibleDecimal,
-    date: SpectaCompatibleNaiveDate,
-    category: String,
-    comment: Option<String>,
-    tags: Option<String>,
-}
-
 #[derive(Debug, Deserialize, Type)]
 struct CreateExpensesRequest {
     name: String,
-    amount: f64,
-    date: String,
+    amount: rust_decimal::Decimal,
+    date: chrono::NaiveDate,
     category: String,
     comment: Option<String>,
     tags: Option<Vec<String>>,
@@ -136,28 +64,16 @@ group by
     ec. `name`,
     e. `comment`
 order by
-    e. `date` desc;
-        "#,
+    e. `date` desc,
+    e. `id` desc;
+                "#,
             )
             .fetch_all(&ctx.pool)
             .await
             .unwrap(); // TODO: handle this error
 
             selection!(
-                expenses
-                    .into_iter()
-                    .map(|e| {
-                        ListExpensesResponse {
-                            id: e.id,
-                            name: e.name,
-                            amount: SpectaCompatibleDecimal::from(e.amount),
-                            date: SpectaCompatibleNaiveDate::from(e.date),
-                            category: e.category,
-                            comment: e.comment,
-                            tags: e.tags,
-                        }
-                    })
-                    .collect::<Vec<ListExpensesResponse>>(),
+                expenses,
                 [{ id, name, amount, date, category, comment, tags }]
             )
         })
@@ -167,7 +83,7 @@ order by
                 // start a transaction
                 let mut transaction = ctx.pool.begin().await.unwrap();
 
-                let mut expenses_categories_id: i32 = -1;
+                let expenses_categories_id: i32;
 
                 // check if category exists
                 let res = sqlx::query!(
@@ -281,7 +197,7 @@ insert into `tags_expenses` (`tags_id`, `expenses_id`) values (?, last_insert_id
                 transaction.commit().await.unwrap();
 
                 // return the new expenses id
-                let expenses: ExpenseQueryResult = sqlx::query_as!(
+                let expense: ExpenseQueryResult = sqlx::query_as!(
                     ExpenseQueryResult,
                     r#"
 select
@@ -305,9 +221,7 @@ group by
     e. `amount`,
     e. `date`,
     ec. `name`,
-    e. `comment`
-order by
-    e. `date` desc;
+    e. `comment`;
                 "#,
                     expenses_id,
                 )
@@ -316,15 +230,7 @@ order by
                 .unwrap();
 
                 selection!(
-                    ListExpensesResponse {
-                        id: expenses.id,
-                        name: expenses.name.clone(),
-                        amount: SpectaCompatibleDecimal::from(expenses.amount),
-                        date: SpectaCompatibleNaiveDate::from(expenses.date),
-                        category: expenses.category.clone(),
-                        comment: expenses.comment.clone(),
-                        tags: expenses.tags.clone(),
-                    },
+                    expense,
                     { id, name, amount, date, category, comment, tags }
                 )
             },
@@ -355,9 +261,7 @@ group by
     e. `amount`,
     e. `date`,
     ec. `name`,
-    e. `comment`
-order by
-    e. `date` desc;
+    e. `comment`;
                 "#,
                 id,
             )
@@ -371,30 +275,25 @@ order by
 
                     // delete the expense
                     // TODO: handle this error
-                    let res = sqlx::query!(r#"delete from `expenses` where `id` = ?;"#, id)
+                    let _res = sqlx::query!(r#"delete from `expenses` where `id` = ?;"#, id)
                         .execute(&mut transaction)
                         .await
                         .unwrap();
 
                     // delete the tags relation
                     // TODO: handle this error
-                    let res = sqlx::query!(r#"delete from `tags_expenses` where `expenses_id` = ?;"#, id)
-                        .execute(&mut transaction)
-                        .await
-                        .unwrap();
+                    let _res = sqlx::query!(
+                        r#"delete from `tags_expenses` where `expenses_id` = ?;"#,
+                        id
+                    )
+                    .execute(&mut transaction)
+                    .await
+                    .unwrap();
 
                     // commit the transaction
                     transaction.commit().await.unwrap();
                     Ok(selection!(
-                        ListExpensesResponse {
-                            id: data.id,
-                            name: data.name.clone(),
-                            amount: SpectaCompatibleDecimal::from(data.amount),
-                            date: SpectaCompatibleNaiveDate::from(data.date),
-                            category: data.category.clone(),
-                            comment: data.comment.clone(),
-                            tags: data.tags.clone(),
-                        },
+                        data,
                         { id, name, amount, date, category, comment, tags }
                     ))
                 }
