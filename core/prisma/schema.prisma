@@ -1,0 +1,56 @@
+generator client {
+  provider = "cargo prisma"
+  output   = "../src/prisma.rs"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model expenses {
+  id                     Int      @id @default(autoincrement())
+  name                   String   @db.VarChar(255)
+  amount                 Decimal  @db.Decimal(15, 2)
+  date                   DateTime @db.Date
+  comment                String?  @db.VarChar(255)
+  expenses_categories_id Int?
+}
+
+model expenses_categories {
+  id   Int    @id @default(autoincrement())
+  name String @unique(map: "name") @db.VarChar(255)
+}
+
+model incomes {
+  id                    Int      @id @default(autoincrement())
+  name                  String   @db.VarChar(255)
+  amount                Decimal  @db.Decimal(15, 2)
+  date                  DateTime @db.Date
+  comment               String?  @db.VarChar(255)
+  incomes_categories_id Int?
+}
+
+model incomes_categories {
+  id   Int    @id @default(autoincrement())
+  name String @unique(map: "name") @db.VarChar(255)
+}
+
+model tags {
+  id   Int    @id @default(autoincrement())
+  name String @unique(map: "name") @db.VarChar(255)
+}
+
+model tags_expenses {
+  tags_id     Int @default(autoincrement())
+  expenses_id Int
+
+  @@id([tags_id, expenses_id])
+}
+
+model tags_incomes {
+  tags_id    Int @default(autoincrement())
+  incomes_id Int
+
+  @@id([tags_id, incomes_id])
+}

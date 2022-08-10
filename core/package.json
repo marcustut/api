@@ -1,0 +1,13 @@
+{
+  "name:": "@marcustut/core",
+  "version": "0.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "codegen": "cargo test",
+    "build": "cargo build",
+    "test": "cargo test",
+    "test:log": "cargo test -- --nocapture",
+    "prisma": "cargo prisma"
+  }
+}

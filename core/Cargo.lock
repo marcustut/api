@@ -698,6 +698,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "marcustutcore"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "axum",
+ "chrono",
+ "dotenv",
+ "rspc",
+ "rust_decimal",
+ "serde",
+ "specta",
+ "sqlx",
+ "time 0.3.12",
+ "tokio",
+ "tower-http",
+]
+
+[[package]]
 name = "matches"
 version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1150,24 +1168,6 @@ dependencies = [
  "specta",
  "thiserror",
  "tokio",
-]
-
-[[package]]
-name = "rust-api"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "axum",
- "chrono",
- "dotenv",
- "rspc",
- "rust_decimal",
- "serde",
- "specta",
- "sqlx",
- "time 0.3.12",
- "tokio",
- "tower-http",
 ]
 
 [[package]]
