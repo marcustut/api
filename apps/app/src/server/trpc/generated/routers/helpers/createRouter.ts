@@ -1,4 +1,4 @@
-import * as trpc from '@trpc/server';
+import * as trpc from "@trpc/server";
 
 import { Context } from '@/server/trpc/context';
 
@@ -7,5 +7,7 @@ export function createRouter() {
 }
 
 export function createProtectedRouter() {
-  return trpc.router<Context>();
+  return trpc
+    .router<Context>()
+    ;
 }

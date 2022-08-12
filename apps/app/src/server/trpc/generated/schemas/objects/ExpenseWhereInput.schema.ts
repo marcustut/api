@@ -35,7 +35,7 @@ const Schema: z.ZodType<Prisma.ExpenseWhereInput> = z
       .union([z.lazy(() => StringNullableFilterObjectSchema), z.string()])
       .optional()
       .nullable(),
-    category: z
+    Category: z
       .union([
         z.lazy(() => CategoryRelationFilterObjectSchema),
         z.lazy(() => CategoryWhereInputObjectSchema),

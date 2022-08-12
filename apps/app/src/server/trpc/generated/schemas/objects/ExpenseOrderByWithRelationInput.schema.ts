@@ -12,7 +12,7 @@ const Schema: z.ZodType<Prisma.ExpenseOrderByWithRelationInput> = z
     amount: z.lazy(() => SortOrderSchema).optional(),
     date: z.lazy(() => SortOrderSchema).optional(),
     comment: z.lazy(() => SortOrderSchema).optional(),
-    category: z.lazy(() => CategoryOrderByWithRelationInputObjectSchema).optional(),
+    Category: z.lazy(() => CategoryOrderByWithRelationInputObjectSchema).optional(),
     categoryId: z.lazy(() => SortOrderSchema).optional(),
     Tag: z.lazy(() => TagOrderByRelationAggregateInputObjectSchema).optional(),
   })

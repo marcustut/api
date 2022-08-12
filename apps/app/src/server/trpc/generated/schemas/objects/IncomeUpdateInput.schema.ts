@@ -26,7 +26,7 @@ const Schema: z.ZodType<Prisma.IncomeUpdateInput> = z
       .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputObjectSchema)])
       .optional()
       .nullable(),
-    category: z
+    Category: z
       .lazy(() => CategoryUpdateOneRequiredWithoutIncomeNestedInputObjectSchema)
       .optional(),
     Tag: z.lazy(() => TagUpdateManyWithoutIncomeNestedInputObjectSchema).optional(),

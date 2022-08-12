@@ -11,7 +11,7 @@ const Schema: z.ZodType<Prisma.ExpenseCreateInput> = z
     amount: z.number(),
     date: z.date(),
     comment: z.string().optional().nullable(),
-    category: z.lazy(() => CategoryCreateNestedOneWithoutExpenseInputObjectSchema),
+    Category: z.lazy(() => CategoryCreateNestedOneWithoutExpenseInputObjectSchema),
     Tag: z.lazy(() => TagCreateNestedManyWithoutExpenseInputObjectSchema).optional(),
   })
   .strict();

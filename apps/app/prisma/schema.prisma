@@ -75,7 +75,7 @@ model Expense {
     amount     Float
     date       DateTime @db.Date
     comment    String?
-    category   Category @relation(fields: [categoryId], references: [id])
+    Category   Category @relation(fields: [categoryId], references: [id])
     categoryId String
     Tag        Tag[]
 }
@@ -86,7 +86,7 @@ model Income {
     amount     Float
     date       DateTime @db.Date
     comment    String?
-    category   Category @relation(fields: [categoryId], references: [id])
+    Category   Category @relation(fields: [categoryId], references: [id])
     categoryId String
     Tag        Tag[]
 }

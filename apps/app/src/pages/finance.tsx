@@ -3,10 +3,8 @@ import Head from 'next/head';
 
 import { trpc } from '@/utils/trpc';
 
-const Home: NextPage = () => {
-  const expenses = trpc.proxy.finance.findManyExpense.useQuery({});
-
-  console.log(expenses.data);
+const Finance: NextPage = () => {
+  // const expenses = trpc.proxy.finance.findManyExpense.useQuery({});
 
   return (
     <>
@@ -24,4 +22,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default Finance;

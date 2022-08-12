@@ -1,0 +1,128 @@
+[
+  {
+    "id": 14,
+    "name": "Lunch Subsidy from Dad",
+    "amount": "30.00",
+    "date": "2022-08-12",
+    "category": "Parent",
+    "comment": "To buy food for Hin and Mei",
+    "tags": "Cash"
+  },
+  {
+    "id": 13,
+    "name": "Lunch Subsidy from Dad",
+    "amount": "45.00",
+    "date": "2022-08-11",
+    "category": "Parent",
+    "comment": "To buy food for Hin and Mei",
+    "tags": "Cash"
+  },
+  {
+    "id": 11,
+    "name": "Badminton Fees (Zheng Jie)",
+    "amount": "11.00",
+    "date": "2022-08-09",
+    "category": "Bill Split",
+    "comment": null,
+    "tags": "MAE"
+  },
+  {
+    "id": 12,
+    "name": "Badminton Fees (Weng Hong)",
+    "amount": "11.00",
+    "date": "2022-08-08",
+    "category": "Bill Split",
+    "comment": "paid for Yen Heng",
+    "tags": "MAE"
+  },
+  {
+    "id": 10,
+    "name": "Badminton Fees (Judy)",
+    "amount": "11.00",
+    "date": "2022-08-08",
+    "category": "Bill Split",
+    "comment": null,
+    "tags": "Touch n' Go"
+  },
+  {
+    "id": 9,
+    "name": "Badminton Fees (Yen Kai)",
+    "amount": "11.00",
+    "date": "2022-08-08",
+    "category": "Bill Split",
+    "comment": null,
+    "tags": "Touch n' Go"
+  },
+  {
+    "id": 8,
+    "name": "Badminton Fees (Weng Hong)",
+    "amount": "11.00",
+    "date": "2022-08-08",
+    "category": "Bill Split",
+    "comment": null,
+    "tags": "Touch n' Go"
+  },
+  {
+    "id": 7,
+    "name": "Badminton Fees (Evy)",
+    "amount": "11.00",
+    "date": "2022-08-08",
+    "category": "Bill Split",
+    "comment": null,
+    "tags": "Touch n' Go"
+  },
+  {
+    "id": 6,
+    "name": "Badminton Fees (Evy)",
+    "amount": "22.00",
+    "date": "2022-08-08",
+    "category": "Bill Split",
+    "comment": "Paid for Liu Hai and Joanne",
+    "tags": "Touch n' Go"
+  },
+  {
+    "id": 5,
+    "name": "Badminton Fees (Chen Tung)",
+    "amount": "11.00",
+    "date": "2022-08-08",
+    "category": "Bill Split",
+    "comment": null,
+    "tags": "Touch n' Go"
+  },
+  {
+    "id": 4,
+    "name": "Badminton Fees (Evy)",
+    "amount": "110.00",
+    "date": "2022-08-08",
+    "category": "Bill Split",
+    "comment": "Ten person's fees for Evy's friends",
+    "tags": "Touch n' Go"
+  },
+  {
+    "id": 3,
+    "name": "Badminton Fees (En Yi)",
+    "amount": "10.00",
+    "date": "2022-08-08",
+    "category": "Bill Split",
+    "comment": null,
+    "tags": "Touch n' Go"
+  },
+  {
+    "id": 1,
+    "name": "Badminton Fees (Kelly Ting)",
+    "amount": "11.00",
+    "date": "2022-08-08",
+    "category": "Bill Split",
+    "comment": null,
+    "tags": "Touch n' Go"
+  },
+  {
+    "id": 2,
+    "name": "Badminton Fees (Fu Ynn)",
+    "amount": "10.00",
+    "date": "2022-08-07",
+    "category": "Bill Split",
+    "comment": null,
+    "tags": "Touch n' Go"
+  }
+]

@@ -1,0 +1,128 @@
+[
+  {
+    "id": 18,
+    "name": "Haircut",
+    "amount": "25.00",
+    "date": "2022-08-11",
+    "category": "Self-Improvement",
+    "comment": "Got it from Joe's Haircut at One Shamelin",
+    "tags": "Cash"
+  },
+  {
+    "id": 17,
+    "name": "Lunch Grab",
+    "amount": "35.50",
+    "date": "2022-08-11",
+    "category": "Food",
+    "comment": "Bought for Hin and myself",
+    "tags": "Grab"
+  },
+  {
+    "id": 16,
+    "name": "YouTube Kuaizero Membership",
+    "amount": "10.00",
+    "date": "2022-08-11",
+    "category": "Subscription",
+    "comment": "Auto deducted from Maybank account",
+    "tags": "MAE"
+  },
+  {
+    "id": 15,
+    "name": "Google Cloud Platform",
+    "amount": "0.03",
+    "date": "2022-08-11",
+    "category": "Subscription",
+    "comment": "Auto deducted from Maybank account",
+    "tags": "MAE"
+  },
+  {
+    "id": 14,
+    "name": "Yonex Shuttlecock",
+    "amount": "89.00",
+    "date": "2022-08-09",
+    "category": "Sports",
+    "comment": "Paid to Andre Him Jian Zhi (ori price is RM100 but deducted RM11 for court fees)",
+    "tags": "MAE"
+  },
+  {
+    "id": 11,
+    "name": "Callie Mun's Birthday Gift",
+    "amount": "21.24",
+    "date": "2022-08-08",
+    "category": "Gift",
+    "comment": "Paid to Mei Jing",
+    "tags": "MAE"
+  },
+  {
+    "id": 13,
+    "name": "Spicy Chicken McDeluxe",
+    "amount": "15.95",
+    "date": "2022-08-07",
+    "category": "Food",
+    "comment": "Together with Liana Ling",
+    "tags": "MAE"
+  },
+  {
+    "id": 12,
+    "name": "Breakfast @ Pao Huat",
+    "amount": "6.70",
+    "date": "2022-08-07",
+    "category": "Food",
+    "comment": "Together with Liana Ling",
+    "tags": "Touch n' Go"
+  },
+  {
+    "id": 6,
+    "name": "Seasons Ice Lemon Tea",
+    "amount": "2.90",
+    "date": "2022-08-06",
+    "category": "Beverage",
+    "comment": "Bought at KK Supermart SS2",
+    "tags": "Grab"
+  },
+  {
+    "id": 5,
+    "name": "August Guitar Class Fees",
+    "amount": "200.00",
+    "date": "2022-08-06",
+    "category": "Self-Improvement",
+    "comment": "Paid to Happy",
+    "tags": "MAE"
+  },
+  {
+    "id": 4,
+    "name": "August Tithe",
+    "amount": "118.00",
+    "date": "2022-08-06",
+    "category": "Tithe",
+    "comment": "Calculated from Layer C's salary",
+    "tags": "Touch n' Go"
+  },
+  {
+    "id": 3,
+    "name": "Veggie Pao",
+    "amount": "2.00",
+    "date": "2021-08-06",
+    "category": "Food",
+    "comment": "Breakfast before going to LS Machinery",
+    "tags": "Touch n' Go"
+  },
+  {
+    "id": 2,
+    "name": "RON95 Petrol @ Petron Litrak Layby 2",
+    "amount": "50.02",
+    "date": "2021-08-06",
+    "category": "Transport",
+    "comment": "Paid with debit card",
+    "tags": "WTN 1007"
+  },
+  {
+    "id": 1,
+    "name": "Mee Utara @ Murni SS2",
+    "amount": "7.95",
+    "date": "2021-08-06",
+    "category": "Food",
+    "comment": "CG Dinner after service at FGA PJ",
+    "tags": "Touch n' Go"
+  }
+]
