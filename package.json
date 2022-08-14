@@ -5,11 +5,15 @@
   "scripts": {
     "lint": "pnpm -r -p --filter=./{packages,apps}/** run lint",
     "build:app": "pnpm -r --filter=@marcustut/app run build",
-    "build:site": "pnpm -r --filter=@marcustut/site run build"
+    "build:site": "pnpm -r --filter=@marcustut/site run build",
+    "nuke:node_modules": "rimraf '**/node_modules'"
   },
   "engines": {
     "node": ">=12.22.0",
     "pnpm": ">= 7.2.1"
   },
-  "packageManager": "pnpm@7.3.0"
+  "packageManager": "pnpm@7.3.0",
+  "devDependencies": {
+    "rimraf": "^3.0.2"
+  }
 }

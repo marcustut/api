@@ -2,6 +2,12 @@ lockfileVersion: 5.4
 
 importers:
 
+  .:
+    specifiers:
+      rimraf: ^3.0.2
+    devDependencies:
+      rimraf: 3.0.2
+
   apps/app:
     specifiers:
       '@next-auth/prisma-adapter': ^1.0.4
