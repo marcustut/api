@@ -1,5 +1,5 @@
 [workspace]
-members = ["core", "core/prisma"]
+members = ["core", "core/prisma", "apps/cli"]
 
 [patch.crates-io]
 rspc = { git = "https://github.com/oscartbeaumont/rspc.git" }
